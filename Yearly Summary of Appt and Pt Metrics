@@ -1,0 +1,9 @@
+SELECT
+    COUNT(DISTINCT a.RECORDID) AS unique_completed_appointments_since_2013,
+    COUNT(DISTINCT a.PATIENTID) AS unique_patients_with_appointments_since_2013
+FROM dbo.APPOINTMENTS a
+LEFT JOIN dbo.CANCELLEDAPPOINTMENTS ca
+    ON ca.APPOINTMENTID = a.RECORDID
+WHERE YEAR(a.APPOINTMENTDATE) >= 2013
+    AND ca.APPOINTMENTID IS NULL  -- Exclude cancelled appointments
+    AND a.APPOINTMENTCODE IN (4, 5, 12, 13)  -- Completed appointment codes
