@@ -1,9 +1,24 @@
 SELECT
-    COUNT(DISTINCT a.RECORDID) AS unique_completed_appointments_since_2013,
-    COUNT(DISTINCT a.PATIENTID) AS unique_patients_with_appointments_since_2013
+    'All time (since 2013)' AS period,
+    COUNT(DISTINCT a.RECORDID) AS unique_appointments,
+    COUNT(DISTINCT a.INTERNALID) AS unique_patients
 FROM dbo.APPOINTMENTS a
 LEFT JOIN dbo.CANCELLEDAPPOINTMENTS ca
     ON ca.APPOINTMENTID = a.RECORDID
 WHERE YEAR(a.APPOINTMENTDATE) >= 2013
-    AND ca.APPOINTMENTID IS NULL  -- Exclude cancelled appointments
-    AND a.APPOINTMENTCODE IN (4, 5, 12, 13)  -- Completed appointment codes
+    AND ca.APPOINTMENTID IS NULL
+    AND a.APPOINTMENTCODE IN (4, 5, 12, 13)
+ 
+UNION ALL
+ 
+SELECT
+    'Last Financial Year (FY2025-26)' AS period,
+    COUNT(DISTINCT a.RECORDID) AS unique_appointments,
+    COUNT(DISTINCT a.INTERNALID) AS unique_patients
+FROM dbo.APPOINTMENTS a
+LEFT JOIN dbo.CANCELLEDAPPOINTMENTS ca
+    ON ca.APPOINTMENTID = a.RECORDID
+WHERE a.APPOINTMENTDATE >= '2025-07-01'
+    AND a.APPOINTMENTDATE < '2026-07-01'
+    AND ca.APPOINTMENTID IS NULL
+    AND a.APPOINTMENTCODE IN (4, 5, 12, 13)
